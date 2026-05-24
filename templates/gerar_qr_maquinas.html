@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar QR Code - Estoque Maquinas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <link rel="shortcut icon" href="/static/icon.png" type="image/x-icon">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at top left, rgba(90, 139, 255, 0.16), transparent 28%),
+                        radial-gradient(circle at bottom right, rgba(44, 103, 226, 0.12), transparent 30%),
+                        var(--bg-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 720px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            margin-bottom: 18px;
+            transition: var(--transition);
+        }
+        .back-link:hover { color: var(--text-primary); }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 38px 34px;
+            box-shadow: var(--shadow-card);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .card h2 {
+            text-align: center;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin: 0 0 6px 0;
+            letter-spacing: -0.4px;
+        }
+
+        .card .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control-dark {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            font-size: 0.95em;
+            transition: var(--transition);
+            width: 100%;
+            backdrop-filter: blur(8px);
+        }
+        .form-control-dark:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(90, 139, 255, 0.16);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .form-control-dark::placeholder { color: var(--text-muted); }
+
+        select.form-control-dark {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+        }
+        select.form-control-dark::-ms-expand { display: none; }
+
+        select.form-control-dark option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px;
+            border: none;
+        }
+
+        select.form-control-dark option:disabled {
+            color: var(--text-muted);
+            background: var(--bg-secondary);
+        }
+
+        select.form-control-dark option:checked {
+            background: linear-gradient(#5a8bff, #5a8bff);
+            background-color: #5a8bff;
+            color: white;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .row-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .btn-qr {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #5a8bff 0%, #3d6ee5 100%);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 14px 30px rgba(25, 83, 207, 0.24);
+        }
+        .btn-qr:hover { background: linear-gradient(135deg, #3d6ee5 0%, #2a57c0 100%); transform: translateY(-1px); }
+        .btn-qr:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+        #qr-result {
+            display: none;
+            background: rgba(10, 28, 55, 0.95);
+            border: 1px solid rgba(90, 139, 255, 0.16);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-top: 24px;
+            text-align: center;
+            animation: fadeUp 0.35s ease-out;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #qr-result h4 { color: var(--accent); margin: 0 0 16px 0; font-size: 1.1em; }
+
+        #qr-img {
+            max-width: 220px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px;
+            background: #0b1836;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            margin: 18px 0;
+            text-align: left;
+        }
+        .info-box strong { color: var(--text-primary); font-size: 1em; }
+        .info-box .badge-update {
+            display: inline-block;
+            background: rgba(240, 179, 107, 0.18);
+            color: var(--warning);
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 0.8em;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .path-text {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+
+        .btn-success {
+            background: rgba(121, 199, 165, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(121, 199, 165, 0.24);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-success:hover { background: rgba(121, 199, 165, 0.18); transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: var(--text-secondary);
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--text-primary); }
+
+        .btn-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+
+        .alert-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-item {
+            background: rgba(17, 38, 65, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+            animation: slideIn 0.25s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .row, .row-3 { grid-template-columns: 1fr; }
+            .card { padding: 24px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <a href="/maquinas" class="back-link">
+                <i class="bi bi-arrow-left"></i> Voltar ao Painel
+            </a>
+            <button class="theme-toggle-btn" aria-label="Alternar tema" style="margin-bottom: 0;">
+                <i class="bi bi-sun-fill"></i>
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🏷️</div>
+            <h2>Gerar QR Code da Maquina</h2>
+            <p class="subtitle">Preencha os dados e imprima a etiqueta</p>
+
+            <form id="form-cadastro">
+                <div class="row">
+                    <div>
+                        <label class="form-label">🏭 Marca *</label>
+                        <input type="text" class="form-control-dark" id="marca" required placeholder="Ex: Dell, Lenovo, ...">
+                    </div>
+                    <div>
+                        <label class="form-label">🏷️ Modelo *</label>
+                        <input type="text" class="form-control-dark" id="modelo" required placeholder="Ex: ...">
+                    </div>
+                </div>
+
+                <div class="row row-3">
+                    <div>
+                        <label class="form-label">⚙️ Processador *</label>
+                        <input type="text" class="form-control-dark" id="processador" required placeholder="Ex: i7-9560U">
+                    </div>
+                    <div>
+                        <label class="form-label">🧠 RAM *</label>
+                        <select id="ram" class="form-control-dark" required>
+                            <option value="8GB DDR3">8GB DDR3</option>
+                            <option value="16GB DDR3">16GB DDR3</option>
+                            <option value="32GB DDR3">32GB DDR3</option>
+                            <option value="8GB DDR4">8GB DDR4</option>
+                            <option value="16GB DDR4">16GB DDR4</option>
+                            <option value="32GB DDR4">32GB DDR4</option>
+                            <option value="8GB DDR5">8GB DDR5</option>
+                            <option value="16GB DDR5">16GB DDR5</option>
+                            <option value="32GB DDR5">32GB DDR5</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">💾 Armazenamento *</label>
+                        <select id="armazenamento" class="form-control-dark" required>
+                            <option value="128GB">128GB</option>
+                            <option value="256GB">256GB</option>
+                            <option value="512GB">512GB</option>
+                            <option value="1TB">1TB</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="grid-column: 1 / -1;">
+                        <label class="form-label">📍 Localização</label>
+                        <textarea id="localizacao" class="form-control-dark" placeholder="Ex: Prateleira A / Sala 2" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-qr" id="btn-gerar">
+                    <i class="bi bi-qr-code-scan"></i> GERAR QR CODE
+                </button>
+            </form>
+
+            <div id="qr-result">
+                <h4 id="qr-titulo">
+                    <i class="bi bi-check-circle-fill"></i> QR Code Gerado!
+                </h4>
+                <img id="qr-img" src="" alt="QR Code">
+
+                <div class="info-box">
+                    <strong id="qr-modelo-info"></strong>
+                    <div id="qr-update-badge"></div>
+                </div>
+
+                <p class="path-text">
+                    <i class="bi bi-folder-check"></i>
+                    <span id="qr-path"></span>
+                </p>
+
+                <div class="btn-group">
+                    <button class="btn-success" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir Etiqueta
+                    </button>
+                    <button class="btn-outline" onclick="resetForm()">
+                        <i class="bi bi-plus-circle"></i> Novo QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-toast" id="toast-container"></div>
+
+    <script>
+        document.getElementById('form-cadastro').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btn-gerar');
+            const textoOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> GERANDO...';
+
+            const localizacao = document.getElementById('localizacao').value.trim();
+            const dados = {
+                marca: document.getElementById('marca').value.trim(),
+                modelo: document.getElementById('modelo').value.trim(),
+                processador: document.getElementById('processador').value.trim(),
+                ram: document.getElementById('ram').value.trim(),
+                armazenamento: document.getElementById('armazenamento').value.trim(),
+                localizacao
+            };
+
+            try {
+                // PASSO 1: Cadastrar máquina
+                const resp1 = await fetch('/api/cadastrar_maquinas', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+
+                const result1 = await resp1.json();
+
+                if (result1.status !== 'ok') {
+                    mostrarToast('❌ Erro ao cadastrar: ' + result1.mensagem, 'danger');
+                    btn.disabled = false;
+                    btn.innerHTML = textoOriginal;
+                    return;
+                }
+
+                if (result1.atualizado) {
+                    mostrarToast('⚠️ Máquina já existia e foi ATUALIZADA com os novos dados!', 'warning');
+                }
+
+                // PASSO 2: Gerar QR Code
+                const resp2 = await fetch('/api/gerar_qr_maquinas', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({modelo_id: result1.modelo_id})
+                });
+
+                const result2 = await resp2.json();
+
+                if (result2.status === 'ok') {
+                    document.getElementById('qr-img').src = result2.qrcode_url;
+
+                    document.getElementById('qr-modelo-info').textContent = localizacao
+                        ? `${dados.marca} ${dados.modelo} (${localizacao}) - ${dados.processador}`
+                        : `${dados.marca} ${dados.modelo} - ${dados.processador}`;
+
+                    if (result1.atualizado) {
+                        document.getElementById('qr-titulo').innerHTML =
+                            '<i class="bi bi-pencil-square"></i> QR Code Atualizado!';
+                        document.getElementById('qr-update-badge').innerHTML =
+                            '<span class="badge-update">⚠️ Máquina atualizada com novos dados</span>';
+                    } else {
+                        document.getElementById('qr-titulo').innerHTML =
+                            '<i class="bi bi-check-circle-fill"></i> QR Code Gerado!';
+                        document.getElementById('qr-update-badge').innerHTML = '';
+                    }
+
+                    document.getElementById('qr-path').textContent = result2.filepath;
+
+                    document.getElementById('qr-result').style.display = 'block';
+                    document.getElementById('qr-result').scrollIntoView({behavior: 'smooth'});
+
+                    document.getElementById('form-cadastro').style.display = 'none';
+
+                    mostrarToast('✅ QR Code de máquina gerado com sucesso!', 'success');
+                } else {
+                    mostrarToast('❌ Erro ao gerar QR Code: ' + result2.mensagem, 'danger');
+                }
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                mostrarToast('❌ Erro de conexão: ' + error.message, 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            }
+        });
+
+        function resetForm() {
+            document.getElementById('qr-result').style.display = 'none';
+            document.getElementById('form-cadastro').style.display = 'block';
+            document.getElementById('form-cadastro').reset();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function mostrarToast(mensagem, tipo) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+
+            const icones = {
+                success: 'check-circle-fill',
+                danger: 'x-circle-fill',
+                warning: 'exclamation-triangle-fill'
+            };
+            const cores = {
+                success: 'var(--success)',
+                danger: 'var(--danger)',
+                warning: 'var(--warning)'
+            };
+
+            toast.innerHTML = `
+                <i class="bi bi-${icones[tipo] || icones.success}" style="color: ${cores[tipo]}; font-size: 1.2em;"></i>
+                <span style="font-size: 0.9em;">${mensagem}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+
+    <script src="/static/theme-toggle.js"></script>
+</body>
+</html>
+

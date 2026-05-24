@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Estoque</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="/static/theme.css">
+<link rel="shortcut icon" href="/static/icon.png" type="image/x-icon">
+
+<style>
+/* Theme tokens come from /static/theme.css and /static/theme-toggle.js */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    background-image: 
+        radial-gradient(ellipse at 20% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.04) 0%, transparent 50%);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Grid pattern overlay */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Animated gradient orbs */
+body::after {
+    content: '';
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.06) 0%, transparent 70%);
+    top: -250px;
+    right: -100px;
+    pointer-events: none;
+    z-index: 0;
+    animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.05); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+.card-box {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 520px);
+    margin: 20px;
+    padding: 40px;
+    border-radius: var(--radius);
+    background: var(--gradient-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(20px);
+    transition: var(--transition);
+}
+
+.card-box:hover {
+    border-color: rgba(37, 99, 235, 0.2);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(37, 99, 235, 0.1);
+}
+
+/* Header section */
+.header-section {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #93c5fd 50%, #60a5fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    opacity: 0.9;
+}
+
+/* Stock display */
+.stock-display {
+    text-align: center;
+    margin: 32px 0;
+    padding: 32px 24px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.2) 0%, rgba(30, 64, 175, 0.15) 100%);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.stock-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.stock-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.stock-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+.stock-value.zero {
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Input field */
+.input-wrapper {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.input-qtd {
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    border: 2px solid rgba(148, 163, 184, 0.12);
+    background: rgba(15, 31, 61, 0.6);
+    color: var(--text-primary);
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+.input-qtd:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    background: rgba(15, 31, 61, 0.8);
+}
+
+.input-qtd::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid rgba(148, 163, 184, 0.2);
+    color: var(--text-primary);
+    box-shadow: none;
+    min-width: auto;
+}
+
+.btn-outline:hover {
+    background: rgba(148, 163, 184, 0.08);
+    border-color: rgba(148, 163, 184, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Action buttons container */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Viewer message */
+.viewer-message {
+    text-align: center;
+    padding: 20px;
+    background: rgba(240, 179, 107, 0.1);
+    border: 1px solid rgba(240, 179, 107, 0.3);
+    border-radius: var(--radius-sm);
+    margin-bottom: 24px;
+    color: #f0b36b;
+}
+
+.viewer-message i {
+    font-size: 2em;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.viewer-message p {
+    margin: 0;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+/* Bottom actions */
+.bottom-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}
+
+.bottom-actions .btn {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 0.85rem;
+}
+
+/* QR Code reader */
+.qr-section {
+    text-align: center;
+}
+
+.qr-box {
+    border: 2px dashed rgba(148, 163, 184, 0.15);
+    border-radius: var(--radius);
+    padding: 8px;
+    background: rgba(15, 31, 61, 0.5);
+    margin: 24px 0;
+    transition: var(--transition);
+}
+
+.qr-box:hover {
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+#reader {
+    width: 100%;
+    min-height: 320px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: rgba(10, 22, 40, 0.8);
+}
+
+/* Manual input section */
+.manual-input {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.manual-input .input-qtd {
+    flex: 1;
+    text-align: left;
+}
+
+.manual-input .btn {
+    width: auto;
+    min-width: 60px;
+    padding: 16px 20px;
+}
+
+/* Specs grid for monitors */
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.spec-label {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.spec-value {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Responsive design */
+@media (max-width: 520px) {
+    .card-box {
+        margin: 16px;
+        padding: 28px 20px;
+    }
+    
+    .title {
+        font-size: 1.4rem;
+    }
+    
+    .stock-value {
+        font-size: 2.8rem;
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .bottom-actions {
+        flex-direction: column;
+    }
+    
+    .manual-input {
+        flex-direction: column;
+    }
+    
+    .manual-input .btn {
+        width: 100%;
+    }
+    
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading shimmer effect */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.loading {
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.05) 0%, rgba(148, 163, 184, 0.1) 50%, rgba(148, 163, 184, 0.05) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-sm);
+}
+</style>
+</head>
+
+<body data-has-modelo="{{ 1 if modelo else 0 }}" 
+      data-model-id="{{ modelo.id if modelo else '' }}" 
+      data-tipo-maquina="{{ 1 if tipo_maquina else 0 }}" 
+      data-tipo-monitor="{{ 1 if tipo_monitor else 0 }}">
+    
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 100;">
+        <button class="theme-toggle-btn" aria-label="Alternar tema">
+            <i class="bi bi-sun-fill"></i>
+        </button>
+    </div>
+    
+    <div class="card-box">
+
+    {% if modelo %}
+
+        {# Modo máquinas ou monitores #}
+        {% set tipo_maquina = tipo_maquina if tipo_maquina is defined else false %}
+        {% set tipo_monitor = tipo_monitor if tipo_monitor is defined else false %}
+
+        <!-- Modelo View -->
+        <div class="header-section">
+            <div class="title">{{ modelo.marca }} {{ modelo.modelo }}</div>
+            <div class="subtitle">
+                {% if tipo_monitor %}
+                    {% if modelo.tamanho %}{{ modelo.tamanho }}"{% endif %}
+                    {% if modelo.resolucao %} | {{ modelo.resolucao }}{% endif %}
+                    {% if modelo.taxa_refresh %} | {{ modelo.taxa_refresh }}Hz{% endif %}
+                {% else %}
+                    {% if modelo.processador %}{{ modelo.processador }}{% endif %}
+                    {% if modelo.ram %} | {{ modelo.ram }}{% endif %}
+                    {% if modelo.armazenamento %} | {{ modelo.armazenamento }}{% endif %}
+                {% endif %}
+            </div>
+            {% if modelo.observacao and not tipo_monitor %}
+            <div class="subtitle" style="margin-top: 12px; color: #a5b4fc; font-size: 0.95rem;">
+                <strong>Observação:</strong> {{ modelo.observacao }}
+            </div>
+            {% endif %}
+            {% if modelo.localizacao %}
+            <div class="subtitle" style="margin-top: 12px; color: #a5b4fc; font-size: 0.95rem;">
+                <strong>📍 Localização:</strong> {{ modelo.localizacao }}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if tipo_monitor and (modelo.tipo_painel or modelo.resolucao or modelo.taxa_refresh) %}
+        <div class="specs-grid">
+            {% if modelo.tipo_painel %}
+            <div class="spec-item">
+                <span class="spec-label">🎨 Tipo de Painel</span>
+                <span class="spec-value">{{ modelo.tipo_painel }}</span>
+            </div>
+            {% endif %}
+            {% if modelo.resolucao %}
+            <div class="spec-item">
+                <span class="spec-label">🔍 Resolução</span>
+                <span class="spec-value">{{ modelo.resolucao }}</span>
+            </div>
+            {% endif %}
+            {% if modelo.taxa_refresh %}
+            <div class="spec-item">
+                <span class="spec-label">⚡ Taxa de Refresh</span>
+                <span class="spec-value">{{ modelo.taxa_refresh }}Hz</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="stock-display">
+            <div class="stock-label">
+                <i class="bi bi-box-seam"></i> Estoque Atual
+            </div>
+            <div class="stock-value" id="saldo">--</div>
+        </div>
+
+        {% if current_user.role == 'admin' %}
+        <div class="input-wrapper">
+            <input type="number" id="qtd" class="input-qtd" value="1" min="1" placeholder="Quantidade">
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="mov('entrada')">
+                <i class="bi bi-arrow-down-circle"></i> Entrada
+            </button>
+            <button class="btn btn-danger" onclick="mov('saida')">
+                <i class="bi bi-arrow-up-circle"></i> Saída
+            </button>
+        </div>
+        {% else %}
+        <div class="viewer-message">
+            <i class="bi bi-eye-slash-fill"></i>
+            <p>Modo visualização apenas.<br>Entre com uma conta de administrador para fazer movimentações.</p>
+        </div>
+        {% endif %}
+
+        <div class="bottom-actions">
+            <button onclick="voltarPagina()" class="btn btn-outline">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </button>
+            <button onclick="location.reload()" class="btn btn-outline">
+                <i class="bi bi-arrow-repeat"></i> Atualizar
+            </button>
+        </div>
+
+    {% else %}
+
+        <!-- Scanner View -->
+        <div class="header-section">
+            <div class="title">
+                <i class="bi bi-qr-code-scan"></i> Ler QR Code
+            </div>
+            <div class="subtitle">Aponte a câmera para o código</div>
+        </div>
+
+        <div class="qr-box">
+            <div id="reader"></div>
+        </div>
+
+        <div class="manual-input">
+            <input id="manual" class="input-qtd" placeholder="Digite o ID manualmente">
+            <button onclick="buscar()" class="btn btn-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+
+    {% endif %}
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <script>
+        const hasModelo = document.body.dataset.hasModelo === '1';
+        const modeloId = document.body.dataset.modelId || '';
+
+        // Função para voltar à página correta baseada no tipo
+        function voltarPagina() {
+            const tipoMaquina = document.body.dataset.tipoMaquina === '1';
+            const tipoMonitor = document.body.dataset.tipoMonitor === '1';
+            
+            if (tipoMonitor) {
+                window.location.href = '/monitores';
+            } else if (tipoMaquina) {
+                window.location.href = '/maquinas';
+            } else {
+                window.location.href = '/';
+            }
+        }
+
+        if (hasModelo) {
+            async function carregar() {
+                try {
+                    const tipoMaquina = document.body.dataset.tipoMaquina === '1';
+                    const tipoMonitor = document.body.dataset.tipoMonitor === '1';
+                    
+                    let urlEstoque;
+                    if (tipoMonitor) {
+                        urlEstoque = '/api/estoque_monitores';
+                    } else if (tipoMaquina) {
+                        urlEstoque = '/api/estoque_maquinas';
+                    } else {
+                        urlEstoque = '/api/estoque';
+                    }
+                    
+                    const resposta = await fetch(urlEstoque);
+                    const dados = await resposta.json();
+                    const item = dados.find((i) => i.id === modeloId);
+                    const saldoElement = document.getElementById('saldo');
+                    const saldo = item ? item.saldo : 0;
+
+                    saldoElement.innerText = saldo;
+
+                    if (saldo <= 0) {
+                        saldoElement.classList.add('zero');
+                    } else {
+                        saldoElement.classList.remove('zero');
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar estoque:', error);
+                    document.getElementById('saldo').innerText = 'Erro';
+                }
+            }
+
+            async function mov(tipo) {
+                const qtdInput = document.getElementById('qtd');
+                const qtd = parseInt(qtdInput.value, 10);
+
+                const tipoMaquina = document.body.dataset.tipoMaquina === '1';
+                const tipoMonitor = document.body.dataset.tipoMonitor === '1';
+                
+                let endpoint;
+                if (tipoMonitor) {
+                    endpoint = '/api/movimentar_monitores';
+                } else if (tipoMaquina) {
+                    endpoint = '/api/movimentar_maquinas';
+                } else {
+                    endpoint = '/api/movimentar';
+                }
+
+                if (!qtd || qtd <= 0) {
+                    alert('Por favor, insira uma quantidade válida.');
+                    return;
+                }
+
+                try {
+                    const resposta = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ modelo_id: modeloId, quantidade: qtd, tipo })
+                    });
+
+                    const json = await resposta.json();
+
+                    if (json.status === 'ok') {
+                        const saldoElement = document.getElementById('saldo');
+                        saldoElement.innerText = json.saldo;
+
+                        if (json.saldo <= 0) {
+                            saldoElement.classList.add('zero');
+                        } else {
+                            saldoElement.classList.remove('zero');
+                        }
+
+                        qtdInput.value = 1;
+                        
+                        // Mostrar toast de sucesso
+                        mostrarToast(json.mensagem, 'success');
+                    } else {
+                        mostrarToast(json.mensagem || 'Erro ao processar movimentação.', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Erro na movimentação:', error);
+                    mostrarToast('Erro ao processar movimentação. Tente novamente.', 'danger');
+                }
+            }
+
+            function mostrarToast(mensagem, tipo) {
+                const toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    // Criar container se não existir
+                    const container = document.createElement('div');
+                    container.id = 'toast-container';
+                    container.style.cssText = 'position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;';
+                    document.body.appendChild(container);
+                }
+                
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast-item';
+                toast.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: slideIn 0.3s ease-out;';
+                
+                const icones = { success: 'check-circle-fill', danger: 'x-circle-fill', warning: 'exclamation-triangle-fill' };
+                const cores = { success: '#79c7a5', danger: '#e17f85', warning: '#f0b36b' };
+                
+                toast.innerHTML = `
+                    <i class="bi bi-${icones[tipo] || icones.success}" style="color: ${cores[tipo]}; font-size: 1.2em;"></i>
+                    <span style="font-size: 0.9em;">${mensagem}</span>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transition = 'opacity 0.3s';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            carregar();
+            window.mov = mov;
+        } else {
+            let scanner = null;
+            
+            function iniciarScanner() {
+                if (scanner) {
+                    try {
+                        scanner.stop().catch(() => {});
+                    } catch(e) {}
+                }
+                
+                scanner = new Html5Qrcode('reader');
+                
+                scanner.start(
+                    { facingMode: 'environment' },
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 },
+                        aspectRatio: 1.0
+                    },
+                    (decodedText) => {
+                        // Detecta qual tipo de rota está no QR Code
+                        let targetUrl = null;
+                        if (decodedText.includes('/scan_monitores/')) {
+                            const id = decodedText.split('/scan_monitores/').pop();
+                            targetUrl = '/scan_monitores/' + id;
+                        } else if (decodedText.includes('/scan_maquinas/')) {
+                            const id = decodedText.split('/scan_maquinas/').pop();
+                            targetUrl = '/scan_maquinas/' + id;
+                        } else if (decodedText.includes('/scan/')) {
+                            const id = decodedText.split('/scan/').pop();
+                            targetUrl = '/scan/' + id;
+                        }
+                        
+                        if (targetUrl) {
+                            scanner.stop().then(() => {
+                                window.location.href = targetUrl;
+                            }).catch((err) => {
+                                console.error('Erro ao parar scanner:', err);
+                                window.location.href = targetUrl;
+                            });
+                        }
+                    },
+                    (errorMessage) => {
+                        console.debug('QR Scan error:', errorMessage);
+                    }
+                ).catch((err) => {
+                    console.error('Erro ao iniciar scanner:', err);
+                    const readerDiv = document.getElementById('reader');
+                    if (readerDiv) {
+                        readerDiv.innerHTML = 
+                            '<div style="padding: 40px; color: #94a3b8; text-align: center;">' +
+                            '<i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>' +
+                            '<p style="margin-top: 16px;">Erro ao acessar a câmera.<br>Verifique as permissões.</p>' +
+                            '</div>';
+                    }
+                });
+            }
+            
+            function pararScanner() {
+                if (scanner) {
+                    try {
+                        scanner.stop().catch(() => {});
+                    } catch(e) {}
+                }
+            }
+            
+            window.buscar = function buscar() {
+                const id = document.getElementById('manual').value.trim();
+                if (id) {
+                    pararScanner();
+                    // Tenta encontrar o tipo correto
+                    window.location.href = '/scan/' + id;
+                }
+            };
+            
+            // Iniciar scanner quando a página carregar
+            iniciarScanner();
+            
+            // Parar scanner quando a página for descarregada
+            window.addEventListener('beforeunload', function() {
+                pararScanner();
+            });
+        }
+        
+        // Adicionar estilos para o toast se não existirem
+        if (!document.querySelector('#toast-styles')) {
+            const style = document.createElement('style');
+            style.id = 'toast-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+    
+    <script src="/static/theme-toggle.js"></script>
+</body>
+</html>

@@ -1,0 +1,324 @@
+/* ============================================
+   SISTEMA DE TEMAS - LIGHT / DARK
+   ============================================ */
+
+:root {
+    color-scheme: dark;
+
+    /* Core palette - dark by default */
+    --bg-primary: #07111f;
+    --bg-secondary: #0d1b31;
+    --bg-card: #0f1f3a;
+    --bg-card-hover: #132746;
+    --bg-surface: rgba(255, 255, 255, 0.04);
+
+    --accent: #5d8eff;
+    --accent-dark: #3f6fe0;
+    --accent-light: #a8c7ff;
+
+    --success: #68d39a;
+    --warning: #f3bb6d;
+    --danger: #f07279;
+
+    --text-primary: #f4f8ff;
+    --text-secondary: #c7d4ee;
+    --text-muted: #90a3c4;
+
+    --border: rgba(255, 255, 255, 0.12);
+    --border-light: rgba(255, 255, 255, 0.08);
+
+    --radius: 20px;
+    --radius-sm: 14px;
+    --radius-xs: 8px;
+
+    --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.24);
+    --shadow-floating: 0 16px 40px rgba(0, 0, 0, 0.32);
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+    --page-orb-1: rgba(93, 142, 255, 0.16);
+    --page-orb-2: rgba(77, 211, 172, 0.08);
+    --page-orb-3: rgba(255, 255, 255, 0.04);
+
+    --transition-fast: 160ms ease;
+    --transition: 240ms ease;
+}
+
+html[data-theme="light"] {
+    color-scheme: light;
+
+    --bg-primary: #f4f7fb;
+    --bg-secondary: #e8eef7;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f7f9fc;
+    --bg-surface: rgba(15, 23, 42, 0.03);
+
+    --accent: #4676ff;
+    --accent-dark: #2f5de0;
+    --accent-light: #dbe6ff;
+
+    --success: #0f9d72;
+    --warning: #d98f1e;
+    --danger: #df4b56;
+
+    --text-primary: #132033;
+    --text-secondary: #415066;
+    --text-muted: #718096;
+
+    --border: rgba(15, 23, 42, 0.10);
+    --border-light: rgba(15, 23, 42, 0.06);
+
+    --shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
+    --shadow-floating: 0 16px 40px rgba(15, 23, 42, 0.12);
+    --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+    --page-orb-1: rgba(70, 118, 255, 0.16);
+    --page-orb-2: rgba(15, 157, 114, 0.07);
+    --page-orb-3: rgba(255, 255, 255, 0.5);
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(circle at top left, var(--page-orb-1), transparent 28%),
+        radial-gradient(circle at bottom right, var(--page-orb-2), transparent 30%),
+        radial-gradient(circle at 50% 50%, var(--page-orb-3), transparent 70%),
+        var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+    transition:
+        background-color var(--transition),
+        color var(--transition);
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 92%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+html[data-theme="light"] body::before {
+    background-image:
+        linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+}
+
+/* Evita deixar “tudo” com transition (pesa e causa travadinhas no toggle de tema) */
+* {
+    transition: none;
+}
+
+
+a {
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* Theme toggle button */
+.theme-toggle-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    border: 1px solid var(--border-light);
+    background: color-mix(in srgb, var(--bg-card) 78%, transparent);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition:
+        transform var(--transition-fast),
+        border-color var(--transition),
+        background-color var(--transition),
+        box-shadow var(--transition);
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-1px) scale(1.04);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-floating);
+}
+
+.theme-toggle-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.theme-toggle-btn i {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+/* Shared glass/card helpers used across templates */
+.modal-content,
+.card,
+.login-container,
+.table-card,
+.filter-bar,
+.stat-card,
+.qr-card,
+.toast-item,
+.toast {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border);
+    box-shadow: var(--shadow-card);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--border) !important;
+}
+
+.btn-close {
+    filter: none;
+    opacity: 0.8;
+}
+
+html[data-theme="light"] .btn-close {
+    filter: none;
+    opacity: 0.9;
+}
+
+/* Shared form fields */
+.form-control,
+.form-control-dark,
+.input-dark,
+.input-qtd {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.form-control::placeholder,
+.form-control-dark::placeholder,
+.input-dark::placeholder,
+.input-qtd::placeholder {
+    color: var(--text-muted);
+}
+
+.form-control:focus,
+.form-control-dark:focus,
+.input-dark:focus,
+.input-qtd:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    outline: none;
+}
+
+/* Shared button treatment */
+.btn-primary-gradient,
+.btn-login,
+.btn-qr,
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.btn-primary-gradient:hover,
+.btn-login:hover,
+.btn-qr:hover,
+.btn-primary:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.btn-glass,
+.btn-ghost,
+.btn-outline {
+    background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.btn-glass:hover,
+.btn-ghost:hover,
+.btn-outline:hover {
+    color: var(--text-primary);
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--bg-card));
+}
+
+.btn-danger {
+    color: var(--danger);
+    border-color: color-mix(in srgb, var(--danger) 28%, transparent);
+}
+
+.btn-danger:hover {
+    color: white;
+    background: color-mix(in srgb, var(--danger) 86%, black);
+    border-color: var(--danger);
+}
+
+/* Table treatment */
+table {
+    color: var(--text-primary);
+}
+
+table thead th {
+    background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+    color: var(--text-muted);
+    border-color: var(--border);
+}
+
+table tbody td,
+.user-table th,
+.user-table td {
+    border-color: var(--border);
+}
+
+table tbody tr:hover {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+/* Small utilities for text contrast */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Smooth image rendering */
+.logo-img,
+.login-logo {
+    image-rendering: auto;
+}
+
+/* Reduce motion when requested */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}

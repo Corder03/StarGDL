@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarGDL - Monitores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <link rel="shortcut icon" href="/static/icon.png" type="image/x-icon">
+    <style>
+/* ============ ESTILOS CLEAN - COMPATÍVEL COM O SISTEMA DE TEMAS ============ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============ HEADER ============ */
+.header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 90px;
+    width: auto;
+}
+
+.logo-text {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+.logo-text span {
+    color: var(--accent);
+}
+
+.logo-subtitle {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+.role-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.role-badge.admin {
+    background: color-mix(in srgb, var(--success) 15%, transparent);
+    color: var(--success);
+}
+
+.role-badge.viewer {
+    background: color-mix(in srgb, var(--warning) 15%, transparent);
+    color: var(--warning);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8em;
+}
+
+/* ============ BOTÕES ============ */
+.btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.85em;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+    letter-spacing: 0.2px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-primary-gradient {
+    background: var(--accent);
+    color: white;
+    border: none;
+}
+.btn-primary-gradient:hover {
+    background: var(--accent-dark);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-glass {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+.btn-glass:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border: 1px solid transparent;
+}
+.btn-ghost:hover {
+    color: var(--text-primary);
+    background: var(--bg-surface);
+}
+
+/* ============ MAIN CONTAINER ============ */
+.main-container {
+    position: relative;
+    z-index: 5;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 40px 40px;
+}
+
+/* ============ STATS ROW ============ */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 15%, transparent);
+    transform: translateY(-2px);
+}
+
+.stat-card.active-card {
+    border-color: var(--accent);
+    background: var(--bg-card-hover);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    margin-bottom: 12px;
+}
+
+.icon-purple { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+.icon-green { background: color-mix(in srgb, var(--success) 12%, transparent); color: var(--success); }
+.icon-orange { background: color-mix(in srgb, var(--warning) 12%, transparent); color: var(--warning); }
+.icon-red { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+
+.stat-value {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ============ FILTER BAR ============ */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+#dynamic-filters {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.filter-label {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    margin-right: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.filter-chip {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.filter-chip:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+.filter-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+.filter-chip .badge-count {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    margin-left: 4px;
+}
+
+.filter-search {
+    margin-left: auto;
+    position: relative;
+    min-width: 250px;
+}
+.filter-search input {
+    width: 100%;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 14px 8px 36px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    transition: all 0.15s ease;
+}
+.filter-search input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.filter-search input::placeholder {
+    color: var(--text-muted);
+}
+.filter-search i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.85em;
+}
+
+.filter-active-indicator {
+    display: none;
+    padding: 6px 12px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: 6px;
+    font-size: 0.75em;
+    color: var(--accent);
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.filter-active-indicator.visible {
+    display: flex;
+}
+
+/* ============ TABLE CARD ============ */
+.table-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.table-header h3 {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-header .count-badge {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead th {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    padding: 12px 16px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+}
+
+table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    font-size: 0.9em;
+}
+
+table tbody tr:hover {
+    background: var(--bg-card-hover);
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.notebook-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notebook-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    flex-shrink: 0;
+    color: var(--accent);
+}
+
+.notebook-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9em;
+}
+
+.notebook-id {
+    font-size: 0.7em;
+    color: var(--text-muted);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.config-chips {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.badge-stock {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.8em;
+    min-width: 40px;
+    text-align: center;
+}
+.badge-ok { background: color-mix(in srgb, var(--success) 12%, transparent); color: var(--success); }
+.badge-warn { background: color-mix(in srgb, var(--warning) 12%, transparent); color: var(--warning); }
+.badge-zero { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+.badge-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.action-group {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-icon-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-size: 0.85em;
+}
+.btn-icon-sm:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.btn-icon-sm.danger:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+.empty-state .empty-icon {
+    font-size: 3em;
+    margin-bottom: 12px;
+    opacity: 0.4;
+    color: var(--text-muted);
+}
+.empty-state h4 {
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-size: 1em;
+}
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 0.85em;
+}
+
+.filtered-empty {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+.filtered-empty.visible {
+    display: block;
+}
+
+/* ============ MODAL ============ */
+.modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-primary);
+}
+.modal-header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+}
+.modal-footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+}
+.btn-close {
+    opacity: 0.7;
+}
+#reader {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+/* ============ TOAST ============ */
+.toast-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.toast-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-floating);
+    animation: slideIn 0.3s ease-out;
+    min-width: 280px;
+    color: var(--text-primary);
+}
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* ============ RESPONSIVO ============ */
+@media (max-width: 1200px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .filter-search { margin-left: 0; width: 100%; }
+}
+@media (max-width: 768px) {
+    .header { padding: 16px 20px; }
+    .main-container { padding: 16px; }
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card { padding: 16px; }
+    .stat-value { font-size: 1.6em; }
+    .logo-text { font-size: 1em; }
+    .logo-img { height: 32px; }
+    .table-header { padding: 12px 16px; }
+    table thead th, table tbody td { padding: 10px 12px; font-size: 0.8em; }
+}
+@media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .header { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body data-current-user-authenticated="{{ 1 if current_user and current_user.is_authenticated else 0 }}" data-user-is-admin="{{ 1 if current_user and current_user.is_authenticated and current_user.role == 'admin' else 0 }}">
+    
+
+    <!-- ============ HEADER ============ -->
+    <header class="header">
+        <a href="/" class="logo-area">
+            <img id="app-logo" src="/static/logo.png" 
+                 alt="StarGDL" 
+                 class="logo-img"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="logo-text" style="display: none;">
+                Star<span>GDL</span>
+                <div class="logo-subtitle">Monitores</div>
+            </div>
+        </a>
+
+        <div class="header-actions" style="gap: 10px;">
+            <a href="/" class="btn btn-glass" style="padding: 10px 18px;">
+                <i class="bi bi-laptop"></i> Notebook
+            </a>
+            <a href="/maquinas" class="btn btn-glass" style="padding: 10px 18px;">
+                <i class="bi bi-cpu"></i> Maquinas
+            </a>
+            <a href="/monitores" class="btn btn-glass" style="padding: 10px 18px;">
+                <i class="bi bi-display"></i> Monitores
+            </a>
+        
+        <div class="header-actions">
+            
+            <a href="/qrcodes?tipo=monitores" class="btn btn-glass">
+                <i class="bi bi-images"></i> Galeria Monitores
+            </a>
+            <a href="/exportar" class="btn btn-ghost">
+                <i class="bi bi-download"></i> Exportar
+            </a>
+            {% if current_user.is_authenticated %}
+            <div class="user-info">
+                <div class="user-name">
+                    <i class="bi bi-person-circle"></i>
+                    {{ current_user.username }}
+                    <span class="role-badge {{ current_user.role }}">{{ current_user.role }}</span>
+                </div>
+                <a href="/logout" class="btn btn-ghost">
+                    <i class="bi bi-box-arrow-right"></i> Sair
+                </a>
+            </div>
+            {% else %}
+            <a href="/login" class="btn btn-primary-gradient">
+                <i class="bi bi-box-arrow-in-right"></i> Login Admin
+            </a>
+            <button class="theme-toggle-btn" aria-label="Alternar tema">
+                <i class="bi bi-sun-fill"></i>
+            </button>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main-container">
+        <!-- Stats - CLICÁVEIS -->
+        <div class="stats-row">
+            <div class="stat-card active-card" id="stat-modelos" onclick="filtrarPorStatus('todos')">
+                <div class="stat-icon icon-purple"><i class="bi bi-display"></i></div>
+                <div class="stat-value" id="total-modelos">0</div>
+                <div class="stat-label">Modelos</div>
+            </div>
+            <div class="stat-card" id="stat-estoque" onclick="filtrarPorStatus('estoque')">
+                <div class="stat-icon icon-green"><i class="bi bi-check-circle"></i></div>
+                <div class="stat-value" id="total-quantidade-estoque">0</div>
+                <div class="stat-label">Unidades em Estoque</div>
+            </div>
+            <div class="stat-card" id="stat-baixo" onclick="filtrarPorStatus('baixo')">
+                <div class="stat-icon icon-orange"><i class="bi bi-exclamation-triangle"></i></div>
+                <div class="stat-value" id="total-quantidade-baixo">0</div>
+                <div class="stat-label">Unidades (Estoque Baixo)</div>
+            </div>
+            <div class="stat-card" id="stat-zerados" onclick="filtrarPorStatus('zerados')">
+                <div class="stat-icon icon-red"><i class="bi bi-x-circle"></i></div>
+                <div class="stat-value" id="total-quantidade-zerados">0</div>
+                <div class="stat-label">Unidades Zeradas</div>
+            </div>
+        </div>
+
+        {% if current_user.role == 'admin' %}
+        <!-- Scan Hero Button -->
+        <div class="scan-hero" style="margin-bottom: 24px;">
+            <button class="btn-scan-hero" data-bs-toggle="modal" data-bs-target="#scanModal">
+                <div class="scan-ring">
+                    <span>📷</span>
+                </div>
+                <span>SCANEAR QR CODE DO MONITOR</span>
+            </button>
+        </div>
+        {% endif %}
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar" id="filter-bar">
+            <div class="filter-label">
+                <i class="bi bi-funnel"></i> Filtrar:
+            </div>
+            <button class="filter-chip active" data-filter="all" onclick="aplicarFiltroMarca('all', this)">
+                Todos
+                <span class="badge-count" id="count-all">0</span>
+            </button>
+            <div id="dynamic-filters"></div>
+            <div class="filter-active-indicator" id="filter-indicator" onclick="limparTodosFiltros()">
+                <i class="bi bi-x-circle"></i> Limpar filtro
+            </div>
+            <div class="filter-search">
+                <i class="bi bi-search"></i>
+                <input type="text" id="search-input" placeholder="Buscar por nome ou ID..." oninput="aplicarBusca()">
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>
+                    <span id="table-title">Monitores Cadastrados</span>
+                    <span class="count-badge" id="table-count">0</span>
+                </h3>
+                <div style="display: flex; gap: 8px;">
+                    <span id="filter-status" style="font-size: 0.8em; color: var(--text-muted); display: flex; align-items: center;"></span>
+                    {% if current_user.role == 'admin' %}
+                    <a href="/gerar_monitores" class="btn btn-primary-gradient" style="font-size: 0.8em; padding: 8px 16px;">
+                        <i class="bi bi-plus-lg"></i> Adicionar
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Monitor</th>
+                            <th>Especificações</th>
+                            <th>Estoque</th>
+                            <th style="width: 100px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-body">
+                        <tr>
+                            <td colspan="4">
+                                <div class="empty-state">
+                                    <div class="empty-icon">🖥️</div>
+                                    <h4>Carregando inventário...</h4>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="filtered-empty" id="filtered-empty">
+                    <div class="empty-icon" style="font-size: 3em;">🔍</div>
+                    <h4>Nenhum resultado encontrado</h4>
+                    <p>Tente ajustar os filtros ou a busca</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============ MODAL SCANNER ============ -->
+    <div class="modal fade" id="scanModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-qr-code-scan"></i> Escanear QR Code
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="reader"></div>
+                    <p class="mt-3" style="color: var(--text-muted); font-size: 0.85em;">
+                        Aponte a câmera para a etiqueta
+                    </p>
+                    <hr style="border-color: var(--border);">
+                    <p style="font-weight: 600; font-size: 0.85em;">Ou digite o código:</p>
+                    <div class="input-group">
+                        <input type="text" id="manual-id" class="form-control input-dark" 
+                               placeholder="Ex: DEL-Monitor-24">
+                        <button class="btn btn-primary-gradient" onclick="buscarManual()" style="border-radius: 0 25px 25px 0;">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ TOAST ============ -->
+    <div class="toast-float" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/theme-toggle.js"></script>
+    
+    <script>
+        console.log('🖥️ Monitores index carregado!');
+        const currentUserAuthenticated = document.body.dataset.currentUserAuthenticated === '1';
+        console.log('Current user authenticated:', currentUserAuthenticated);
+        
+        const userIsAdmin = document.body.dataset.userIsAdmin === '1';
+        
+        let html5QrCode;
+        let scannerAtivo = false;
+        let todosDados = [];
+        let filtroMarcaAtual = 'all';
+        let filtroStatusAtual = 'todos';
+        let buscaAtual = '';
+
+        async function carregarDados() {
+            try {
+                console.log('📡 Carregando dados de monitores...');
+                const resp = await fetch('/api/estoque_monitores');
+                todosDados = await resp.json();
+                console.log('✅ Dados carregados:', todosDados.length, 'monitores');
+                
+                const marcas = [...new Set(todosDados.map(item => item.marca))].sort();
+                atualizarFiltros(marcas);
+                aplicarFiltroAtual();
+                atualizarEstatisticas();
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados:', error);
+            }
+        }
+
+        function atualizarFiltros(marcas) {
+            const container = document.getElementById('dynamic-filters');
+            let html = '';
+            
+            marcas.forEach(marca => {
+                const count = todosDados.filter(item => item.marca === marca).length;
+                html += `
+                    <button class="filter-chip" data-filter="${marca.toLowerCase()}" onclick="aplicarFiltroMarca('${marca.toLowerCase()}', this)">
+                        ${marca}
+                        <span class="badge-count">${count}</span>
+                    </button>
+                `;
+            });
+            
+            container.innerHTML = html;
+            document.getElementById('count-all').textContent = todosDados.length;
+        }
+
+        function aplicarFiltroMarca(filtro, elemento) {
+            console.log('🏷️ Filtrando por marca:', filtro);
+            filtroMarcaAtual = filtro;
+            
+            document.querySelectorAll('#filter-bar .filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            if (elemento) {
+                elemento.classList.add('active');
+            } else {
+                const chip = document.querySelector(`[data-filter="${filtro}"]`);
+                if (chip) chip.classList.add('active');
+            }
+            
+            atualizarIndicadorFiltro();
+            aplicarFiltroAtual();
+        }
+
+        function filtrarPorStatus(status) {
+            console.log('📊 Filtrando por status:', status);
+            filtroStatusAtual = status;
+            
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.remove('active-card');
+            });
+            
+            const cardMap = {
+                'todos': 'stat-modelos',
+                'estoque': 'stat-estoque',
+                'baixo': 'stat-baixo',
+                'zerados': 'stat-zerados'
+            };
+            
+            const cardId = cardMap[status];
+            if (cardId) {
+                const card = document.getElementById(cardId);
+                if (card) {
+                    card.classList.add('active-card');
+                }
+            }
+            
+            atualizarIndicadorFiltro();
+            aplicarFiltroAtual();
+        }
+
+        function atualizarIndicadorFiltro() {
+            const indicator = document.getElementById('filter-indicator');
+            if (filtroStatusAtual !== 'todos' || filtroMarcaAtual !== 'all' || buscaAtual) {
+                indicator.classList.add('visible');
+            } else {
+                indicator.classList.remove('visible');
+            }
+        }
+
+        function limparTodosFiltros() {
+            console.log('🧹 Limpando todos os filtros');
+            filtroMarcaAtual = 'all';
+            filtroStatusAtual = 'todos';
+            buscaAtual = '';
+            document.getElementById('search-input').value = '';
+            
+            document.querySelectorAll('#filter-bar .filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            document.querySelector('[data-filter="all"]')?.classList.add('active');
+            
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.remove('active-card');
+            });
+            document.getElementById('stat-modelos')?.classList.add('active-card');
+            
+            document.getElementById('filter-indicator').classList.remove('visible');
+            aplicarFiltroAtual();
+        }
+
+        function aplicarBusca() {
+            buscaAtual = document.getElementById('search-input').value.toLowerCase().trim();
+            console.log('🔍 Buscando:', buscaAtual);
+            atualizarIndicadorFiltro();
+            aplicarFiltroAtual();
+        }
+
+        function aplicarFiltroAtual() {
+            let dadosFiltrados = [...todosDados];
+            
+            if (filtroStatusAtual === 'estoque') {
+                dadosFiltrados = dadosFiltrados.filter(item => item.saldo > 3);
+            } else if (filtroStatusAtual === 'baixo') {
+                dadosFiltrados = dadosFiltrados.filter(item => item.saldo === 1 || item.saldo === 2 || item.saldo === 3);
+            } else if (filtroStatusAtual === 'zerados') {
+                dadosFiltrados = dadosFiltrados.filter(item => item.saldo === 0);
+            }
+            
+            if (filtroMarcaAtual !== 'all') {
+                dadosFiltrados = dadosFiltrados.filter(item => 
+                    item.marca.toLowerCase() === filtroMarcaAtual
+                );
+            }
+            
+            if (buscaAtual) {
+                dadosFiltrados = dadosFiltrados.filter(item => 
+                    item.marca.toLowerCase().includes(buscaAtual) ||
+                    item.modelo.toLowerCase().includes(buscaAtual) ||
+                    item.id.toLowerCase().includes(buscaAtual)
+                );
+            }
+            
+            renderizarTabela(dadosFiltrados);
+            
+            const statusLabels = {
+                'todos': 'Monitores Cadastrados',
+                'estoque': '✅ Em Estoque',
+                'baixo': '⚠️ Estoque Baixo',
+                'zerados': '❌ Zerados'
+            };
+            document.getElementById('table-title').textContent = statusLabels[filtroStatusAtual] || 'Monitores Cadastrados';
+            
+            const statusEl = document.getElementById('filter-status');
+            let status = [];
+            
+            if (filtroStatusAtual !== 'todos') {
+                status.push(statusLabels[filtroStatusAtual]);
+            }
+            if (filtroMarcaAtual !== 'all') {
+                status.push(`Marca: ${filtroMarcaAtual.toUpperCase()}`);
+            }
+            if (buscaAtual) {
+                status.push(`Busca: "${buscaAtual}"`);
+            }
+            
+            statusEl.innerHTML = status.length > 0 ? 
+                `<i class="bi bi-funnel-fill"></i> ${status.join(' | ')}` : '';
+            
+            document.getElementById('table-count').textContent = dadosFiltrados.length;
+            
+            const emptyState = document.getElementById('filtered-empty');
+            if (dadosFiltrados.length === 0 && todosDados.length > 0) {
+                emptyState.classList.add('visible');
+            } else {
+                emptyState.classList.remove('visible');
+            }
+        }
+
+        function renderizarTabela(dados) {
+            let html = '';
+            
+            if (dados.length === 0) {
+                if (todosDados.length === 0) {
+                    html = `<tr><td colspan="4">
+                        <div class="empty-state">
+                            <div class="empty-icon">🖥️</div>
+                            <h4>Nenhum monitor cadastrado</h4>
+                            <p>Clique em "Adicionar" para começar</p>
+                        </div>
+                    </td></tr>`;
+                }
+            } else {
+                dados.forEach(item => {
+                    let badge = 'badge-ok';
+                    if (item.saldo === 0) badge = 'badge-zero';
+                    else if (item.saldo <= 3) badge = 'badge-warn';
+
+                    const chips = [];
+                    if (item.tamanho) chips.push(`📏 ${item.tamanho}"`);
+                    if (item.resolucao) chips.push(`🔍 ${item.resolucao}`);
+                    if (item.taxa_refresh) chips.push(`⚡ ${item.taxa_refresh}Hz`);
+                    if (item.tipo_painel) chips.push(`🎨 ${item.tipo_painel}`);
+
+                    html += `
+                        <tr>
+                            <td>
+                                <div class="monitor-cell">
+                                    <div class="monitor-icon">🖥️</div>
+                                    <div>
+                                        <div class="monitor-name">${item.marca} ${item.modelo}</div>
+                                        <div class="monitor-id">${item.id}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="config-chips">
+                                    ${chips.length ? chips.map(c => `<span class="chip">${c}</span>`).join('') : '<span class="chip">--</span>'}
+                                </div>
+                            </td>
+                            <td><span class="badge-stock ${badge}">${item.saldo}</span></td>
+                            <td>
+                                <div class="action-group">
+                                    ${userIsAdmin ? `<a href="/scan_monitores/${item.id}" class="btn-icon-sm" title="Entrada/Saída">
+                                        <i class="bi bi-arrow-left-right"></i>
+                                    </a>` : ''}
+                                    ${userIsAdmin ? `<button class="btn-icon-sm danger" onclick="removerMonitor('${item.id}')" title="Remover">
+                                        <i class="bi bi-trash"></i>
+                                    </button>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            document.getElementById('tabela-body').innerHTML = html;
+        }
+
+        function atualizarEstatisticas() {
+            document.getElementById('total-modelos').textContent = todosDados.length;
+            
+            const qtdEstoque = todosDados.reduce((total, item) => {
+                return total + (item.saldo > 0 ? item.saldo : 0);
+            }, 0);
+            document.getElementById('total-quantidade-estoque').textContent = qtdEstoque;
+            
+            const qtdBaixo = todosDados.reduce((total, item) => {
+                return total + ((item.saldo >= 1 && item.saldo <= 3) ? item.saldo : 0);
+            }, 0);
+            document.getElementById('total-quantidade-baixo').textContent = qtdBaixo;
+            
+            const zerados = todosDados.filter(item => item.saldo === 0).length;
+            document.getElementById('total-quantidade-zerados').textContent = zerados;
+        }
+
+        async function removerMonitor(modeloId) {
+            if (!confirm(`⚠️ Remover ${modeloId}?\nEsta ação não pode ser desfeita!`)) return;
+            if (!confirm('Confirme a remoção.')) return;
+            try {
+                const resp = await fetch('/api/remover_monitores', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({modelo_id: modeloId})
+                });
+                const result = await resp.json();
+                mostrarToast(result.mensagem, result.status === 'ok' ? 'success' : 'danger');
+                carregarDados();
+            } catch (error) {
+                mostrarToast('Erro: ' + error.message, 'danger');
+            }
+        }
+
+        function iniciarScanner() {
+            if (scannerAtivo) return;
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (text) => {
+                    if (text.includes('/scan_monitores/')) {
+                        const id = text.split('/scan_monitores/').pop();
+                        pararScanner();
+                        bootstrap.Modal.getInstance(document.getElementById('scanModal')).hide();
+                        window.location.href = `/scan_monitores/${id}`;
+                    }
+                },
+                () => {}
+            ).then(() => { scannerAtivo = true; });
+        }
+
+        function pararScanner() {
+            if (html5QrCode && scannerAtivo) {
+                html5QrCode.stop().then(() => { scannerAtivo = false; });
+            }
+        }
+
+        function buscarManual() {
+            const id = document.getElementById('manual-id').value.trim();
+            if (id) {
+                pararScanner();
+                bootstrap.Modal.getInstance(document.getElementById('scanModal')).hide();
+                window.location.href = `/scan_monitores/${id}`;
+            }
+        }
+
+        function mostrarToast(mensagem, tipo) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+            const icones = { success: 'check-circle-fill', danger: 'x-circle-fill', warning: 'exclamation-triangle-fill' };
+            const cores = { success: 'var(--success)', danger: 'var(--danger)', warning: 'var(--warning)' };
+            toast.innerHTML = `
+                <i class="bi bi-${icones[tipo] || icones.success}" style="color: ${cores[tipo]}; font-size: 1.2em;"></i>
+                <span style="font-size: 0.9em;">${mensagem}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // Event Listeners
+        document.getElementById('scanModal').addEventListener('shown.bs.modal', iniciarScanner);
+        document.getElementById('scanModal').addEventListener('hidden.bs.modal', pararScanner);
+        document.getElementById('manual-id').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') buscarManual();
+        });
+
+        // Inicialização
+        console.log('🎬 Inicializando aplicação de monitores...');
+        carregarDados();
+        setInterval(carregarDados, 30000);
+    </script>
+</body>
+</html>

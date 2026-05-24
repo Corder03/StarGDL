@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria de QR Codes - Máquinas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/theme.css">
+    <link rel="shortcut icon" href="/static/icon.png" type="image/x-icon">
+    <style>
+        :root {
+            --bg-primary: #04111f;
+            --bg-secondary: #0a1929;
+            --bg-card: #0d1f3c;
+            --bg-card-hover: #152d5c;
+            --accent: #3d5aa8;
+            --accent-dark: #2a3f80;
+            --accent-light: #93c5fd;
+            --success: #79c7a5;
+            --warning: #f0b36b;
+            --danger: #e17f85;
+            --text-primary: #f5f8ff;
+            --text-secondary: #c9d4f2;
+            --text-muted: #95a6c2;
+            --border: rgba(255, 255, 255, 0.12);
+            --border-light: rgba(255, 255, 255, 0.08);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 8px;
+            --shadow-card: 0 18px 45px rgba(0, 0, 0, 0.22);
+            --transition: all 0.25s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(circle at top left, rgba(90, 139, 255, 0.16), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(44, 103, 226, 0.12), transparent 30%),
+                radial-gradient(circle at 50% 50%, rgba(90, 139, 255, 0.03), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-info h1 {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .header-info p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.85em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85em;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #3d5aa8 0%, #2a3f80 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(61, 90, 168, 0.3);
+        }
+        .btn-primary-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(61, 90, 168, 0.5);
+            color: white;
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-light);
+            color: var(--text-primary);
+            backdrop-filter: blur(10px);
+        }
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .alert-dark {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-top: 16px;
+            font-size: 0.85em;
+        }
+        .alert-dark code {
+            background: rgba(61, 90, 168, 0.2);
+            color: var(--accent-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .qr-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-card.hidden {
+            display: none;
+        }
+
+        .qr-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(61, 90, 168, 0.2);
+        }
+
+        .qr-image {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-light);
+        }
+
+        .qr-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-xs);
+            cursor: pointer;
+            transition: var(--transition);
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+        }
+
+        .qr-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .qr-info {
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .badge-id {
+            background: rgba(61, 90, 168, 0.2);
+            color: var(--accent-light);
+            font-size: 0.7em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .qr-info h5 {
+            color: var(--text-primary);
+            margin: 0 0 6px 0;
+            font-weight: 700;
+            font-size: 1em;
+        }
+
+        .config-chips {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-light);
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .btn-group-custom {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #3d5aa8 0%, #2a3f80 100%);
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 25px;
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(61, 90, 168, 0.3);
+            color: white;
+        }
+
+        .btn-print {
+            background: rgba(0, 210, 160, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 210, 160, 0.3);
+            padding: 9px 16px;
+            border-radius: 25px;
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .btn-print:hover {
+            background: rgba(0, 210, 160, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-scan {
+            background: rgba(255, 192, 72, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(255, 192, 72, 0.3);
+            padding: 9px 16px;
+            border-radius: 25px;
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-scan:hover {
+            background: rgba(255, 192, 72, 0.25);
+            transform: translateY(-2px);
+            color: var(--warning);
+        }
+
+        .empty-state {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .empty-state.hidden {
+            display: none;
+        }
+        .empty-state i {
+            font-size: 5em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-footer {
+            border-top: 1px solid var(--border);
+        }
+        .btn-close {
+            filter: invert(0.7);
+        }
+
+        .toast-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+        }
+        .toast-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* ============ FILTER BAR ============ */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        #dynamic-filters {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.85em;
+            margin-right: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-light);
+            background: transparent;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-chip:hover {
+            background: rgba(61, 90, 168, 0.1);
+            border-color: var(--accent);
+            color: white;
+        }
+        .filter-chip.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(61, 90, 168, 0.3);
+        }
+        .filter-chip .badge-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-left: 4px;
+        }
+
+        .filter-search {
+            margin-left: auto;
+            position: relative;
+            min-width: 250px;
+        }
+        .filter-search input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            color: white;
+            padding: 9px 16px 9px 40px;
+            border-radius: 25px;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .filter-search input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(61, 90, 168, 0.15);
+        }
+        .filter-search input::placeholder {
+            color: var(--text-muted);
+        }
+        .filter-search i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .filter-active-indicator {
+            display: none;
+            padding: 6px 12px;
+            background: rgba(61, 90, 168, 0.15);
+            border-radius: 20px;
+            font-size: 0.75em;
+            color: var(--accent-light);
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .filter-active-indicator.visible {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .qr-grid { grid-template-columns: 1fr; }
+            .btn-group-custom { flex-direction: column; }
+            .header { padding: 16px; }
+        }
+
+        @media print {
+            body { background: white; }
+            body::before { display: none; }
+            .header, .btn-group-custom, .empty-state, .toast-float, .filter-bar { display: none; }
+            .qr-card { 
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+                background: white;
+                margin-bottom: 20px;
+            }
+            .qr-card.hidden { display: block; }
+            .qr-card * { color: #333 !important; }
+            .qr-image { background: #f5f5f5; border: 1px solid #ddd; }
+            .badge-id { background: #3d5aa8; color: white !important; }
+            .qr-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-info">
+                <h1>🏭 Galeria de QR Codes - Máquinas</h1>
+                <p><i class="bi bi-folder"></i> <span id="total-qrcodes">{{ qrcodes|length }}</span> QR Code(s) de máquinas gerado(s)</p>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle-btn" aria-label="Alternar tema">
+                    <i class="bi bi-sun-fill"></i>
+                </button>
+                <button class="btn btn-glass" onclick="imprimirTodos()">
+                    <i class="bi bi-printer"></i> Imprimir Todos
+                </button>
+                {% if current_user.role == 'admin' %}
+                <a href="/gerar_maquinas" class="btn btn-primary-gradient">
+                    <i class="bi bi-plus-lg"></i> Novo QR Code Máquina
+                </a>
+                {% endif %}
+                <a href="/maquinas" class="btn btn-glass">
+                    <i class="bi bi-house"></i> Painel Máquinas
+                </a>
+            </div>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar" id="filter-bar">
+            <div class="filter-label">
+                <i class="bi bi-funnel"></i> Filtrar:
+            </div>
+            <button class="filter-chip active" data-filter="all" onclick="aplicarFiltroMarca('all', this)">
+                Todos
+                <span class="badge-count" id="count-all">{{ qrcodes|length }}</span>
+            </button>
+            <div id="dynamic-filters"></div>
+            <div class="filter-active-indicator" id="filter-indicator" onclick="limparTodosFiltros()">
+                <i class="bi bi-x-circle"></i> Limpar filtro
+            </div>
+            <div class="filter-search">
+                <i class="bi bi-search"></i>
+                <input type="text" id="search-input" placeholder="Buscar por nome ou ID..." oninput="aplicarBusca()">
+            </div>
+        </div>
+
+        {% if qrcodes %}
+        <div class="qr-grid" id="qr-grid">
+            {% for qr in qrcodes %}
+            <div class="qr-card" data-marca="{{ qr.marca }}" data-modelo="{{ qr.modelo }}" data-id="{{ qr.id }}">
+                <div class="qr-image">
+                    <img src="{{ qr.url }}" alt="QR Code {{ qr.marca }} {{ qr.modelo }}" 
+                         onclick="ampliarQR('{{ qr.url }}', '{{ qr.marca }} {{ qr.modelo }}')"
+                         title="Clique para ampliar">
+                </div>
+                <div class="qr-info">
+                    <span class="badge-id">ID: {{ qr.id }}</span>
+                    <h5>{{ qr.marca }} {{ qr.modelo }}</h5>
+                    <div class="config-chips">
+                        {% if qr.processador %}<span class="chip">⚙️ {{ qr.processador }}</span>{% endif %}
+                        {% if qr.ram %}<span class="chip">🧠 {{ qr.ram }}</span>{% endif %}
+                        {% if qr.armazenamento %}<span class="chip">💾 {{ qr.armazenamento }}</span>{% endif %}
+                        {% if qr.localizacao %}<span class="chip">📍 {{ qr.localizacao }}</span>{% endif %}
+                    </div>
+                </div>
+                <div class="btn-group-custom">
+                    <a href="{{ qr.url }}" download="QR_MAQUINA_{{ qr.id }}.png" class="btn-download">
+                        <i class="bi bi-download"></i> Baixar
+                    </a>
+                    <button class="btn-print" onclick="imprimirQR('{{ qr.url }}', '{{ qr.marca }} {{ qr.modelo }}', '{{ qr.id }}')">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                    <a href="/scan_maquinas/{{ qr.id }}" class="btn-scan">
+                        <i class="bi bi-upc-scan"></i> Scan
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="empty-state hidden" id="no-results">
+            <i class="bi bi-search"></i>
+            <h3>Nenhum resultado encontrado</h3>
+            <p>Tente ajustar os filtros ou a busca</p>
+        </div>
+        {% else %}
+        <div class="empty-state" id="empty-state">
+            <i class="bi bi-qr-code"></i>
+            <h3>Nenhum QR Code de máquina gerado ainda</h3>
+            <p>Gere seu primeiro QR Code para máquinas!</p>
+            {% if current_user.role == 'admin' %}
+            <a href="/gerar_maquinas" class="btn btn-primary-gradient" style="margin-top: 16px;">
+                <i class="bi bi-plus-circle text-white"></i> Gerar QR Code Máquina
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="modal fade" id="modalAmpliar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-titulo"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="modal-img" src="" alt="" class="img-fluid" style="border-radius: var(--radius-sm);">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-print" onclick="imprimirImagemModal()">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                    <a id="modal-download" href="#" download class="btn btn-primary-gradient">
+                        <i class="bi bi-download"></i> Baixar
+                    </a>
+                    <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-float" id="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let modalImgUrl = '';
+        let modalImgNome = '';
+        let filtroAtualMarca = 'all';
+
+        // Configurações da etiqueta - ALTERE AQUI CONFORME SUA ETIQUETA
+        const ETIQUETA_CONFIG = {
+            largura: '10cm',    // Largura total da etiqueta
+            altura: '7.5cm',    // Altura total da etiqueta
+            margem: '0.3cm',    // Margem interna
+            qrSize: '5cm',      // Tamanho do QR Code
+            fonteTitulo: '11px',
+            fonteInfo: '8px'
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarFiltros();
+        });
+
+        function inicializarFiltros() {
+            const cards = document.querySelectorAll('.qr-card');
+            const marcas = new Set();
+            
+            cards.forEach(card => {
+                const marca = card.getAttribute('data-marca');
+                if (marca) marcas.add(marca);
+            });
+
+            const dynamicFilters = document.getElementById('dynamic-filters');
+            dynamicFilters.innerHTML = '';
+            
+            marcas.forEach(marca => {
+                const count = document.querySelectorAll(`.qr-card[data-marca="${marca}"]`).length;
+                const chip = document.createElement('button');
+                chip.className = 'filter-chip';
+                chip.setAttribute('data-filter', marca);
+                chip.onclick = function() { aplicarFiltroMarca(marca, this); };
+                chip.innerHTML = `${marca} <span class="badge-count">${count}</span>`;
+                dynamicFilters.appendChild(chip);
+            });
+
+            document.getElementById('count-all').textContent = cards.length;
+        }
+
+        function aplicarFiltroMarca(marca, elemento) {
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            if (elemento) {
+                elemento.classList.add('active');
+            } else {
+                const chip = document.querySelector(`.filter-chip[data-filter="${marca}"]`);
+                if (chip) chip.classList.add('active');
+            }
+
+            filtroAtualMarca = marca;
+            aplicarFiltrosCombinados();
+
+            const indicator = document.getElementById('filter-indicator');
+            if (marca !== 'all') {
+                indicator.classList.add('visible');
+            } else {
+                indicator.classList.remove('visible');
+            }
+        }
+
+        function aplicarBusca() {
+            aplicarFiltrosCombinados();
+        }
+
+        function aplicarFiltrosCombinados() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.qr-card');
+            const emptyState = document.getElementById('no-results');
+            const grid = document.getElementById('qr-grid');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const marca = card.getAttribute('data-marca');
+                const modelo = card.getAttribute('data-modelo');
+                const id = card.getAttribute('data-id');
+                const textoCompleto = `${marca} ${modelo} ${id}`.toLowerCase();
+
+                const passaFiltroMarca = filtroAtualMarca === 'all' || marca === filtroAtualMarca;
+                const passaBusca = !searchTerm || textoCompleto.includes(searchTerm);
+
+                if (passaFiltroMarca && passaBusca) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('total-qrcodes').textContent = visibleCount;
+
+            if (emptyState) {
+                if (visibleCount === 0) {
+                    emptyState.classList.remove('hidden');
+                    if (grid) grid.style.display = 'none';
+                } else {
+                    emptyState.classList.add('hidden');
+                    if (grid) grid.style.display = '';
+                }
+            }
+        }
+
+        function limparTodosFiltros() {
+            document.getElementById('search-input').value = '';
+            const chipAll = document.querySelector('.filter-chip[data-filter="all"]');
+            aplicarFiltroMarca('all', chipAll);
+            document.getElementById('filter-indicator').classList.remove('visible');
+        }
+
+        function ampliarQR(url, nome) {
+            modalImgUrl = url;
+            modalImgNome = nome;
+            document.getElementById('modal-img').src = url;
+            document.getElementById('modal-titulo').textContent = nome;
+            document.getElementById('modal-download').href = url;
+            document.getElementById('modal-download').download = `QR_MAQUINA_${nome.replace(/ /g, '_')}.png`;
+            new bootstrap.Modal(document.getElementById('modalAmpliar')).show();
+        }
+
+        function imprimirImagemModal() {
+            imprimirQR(modalImgUrl, modalImgNome, '');
+        }
+
+        /**
+         * FUNÇÃO PRINCIPAL - Imprimir QR individual no formato exato de etiqueta
+         * Abre a janela de impressão já configurada com o tamanho da etiqueta
+         */
+        function imprimirQR(url, nome, id) {
+            const cfg = ETIQUETA_CONFIG;
+            
+            // Criar janela para impressão
+            const printWindow = window.open('', '_blank', 'width=500,height=400');
+            
+            printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Etiqueta Máquina - ${nome}</title>
+    <meta charset="UTF-8">
+    <style>
+        /* Configuração EXATA do tamanho da página de impressão */
+        @page {
+            size: ${cfg.largura} ${cfg.altura};
+            margin: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: ${cfg.largura};
+            height: ${cfg.altura};
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: white;
+        }
+        
+        .etiqueta {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: ${cfg.margem};
+            page-break-inside: avoid;
+        }
+        
+        .qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-container img {
+            width: ${cfg.qrSize};
+            height: ${cfg.qrSize};
+            object-fit: contain;
+            image-rendering: crisp-edges;
+        }
+        
+        .info-container {
+            margin-top: 6px;
+            width: 100%;
+        }
+        
+        .titulo {
+            font-size: ${cfg.fonteTitulo};
+            font-weight: bold;
+            color: #000;
+            margin: 3px 0;
+            line-height: 1.2;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+        
+        .subtitulo {
+            font-size: ${cfg.fonteInfo};
+            color: #555;
+            margin: 1px 0;
+        }
+        
+        .id-badge {
+            display: inline-block;
+            background: #3d5aa8;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: bold;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .scan-text {
+            font-size: 7px;
+            color: #999;
+            margin-top: 3px;
+        }
+        
+        /* Garantir que nada ultrapasse a etiqueta */
+        @media print {
+            html, body {
+                width: ${cfg.largura};
+                height: ${cfg.altura};
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="etiqueta">
+        <div class="qr-container">
+            <img src="${url}" alt="QR Code" crossorigin="anonymous">
+        </div>
+        <div class="info-container">
+            <div class="titulo">${nome}</div>
+            ${id ? `<div class="id-badge">ID: ${id}</div>` : ''}
+            <div class="subtitulo">Escaneie para acessar</div>
+            <div class="scan-text">📱 Aponte a câmera do celular</div>
+        </div>
+    </div>
+</body>
+</html>`);
+            
+            printWindow.document.close();
+            
+            // Aguardar carregamento completo e abrir impressão automaticamente
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.print();
+                    // Fechar janela após imprimir (opcional - algumas pessoas preferem manter aberta)
+                    // printWindow.onafterprint = function() { printWindow.close(); };
+                }, 500);
+            };
+            
+            mostrarToast('🖨️ Janela de impressão aberta!', 'success');
+        }
+
+        /**
+         * Imprimir TODOS os QR Codes visíveis
+         * Cada um no tamanho exato de etiqueta
+         */
+        function imprimirTodos() {
+            const cards = document.querySelectorAll('.qr-card:not(.hidden)');
+            
+            if (cards.length === 0) {
+                mostrarToast('⚠️ Nenhum QR Code visível para imprimir', 'warning');
+                return;
+            }
+            
+            const cfg = ETIQUETA_CONFIG;
+            const printWindow = window.open('', '_blank', 'width=600,height=500');
+            
+            printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+    <title>Todas as Etiquetas QR - Máquinas</title>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: ${cfg.largura} ${cfg.altura};
+            margin: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: white;
+        }
+        
+        .etiqueta {
+            width: ${cfg.largura};
+            height: ${cfg.altura};
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: ${cfg.margem};
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+        
+        .etiqueta:last-child {
+            page-break-after: auto;
+        }
+        
+        .qr-container img {
+            width: ${cfg.qrSize};
+            height: ${cfg.qrSize};
+            object-fit: contain;
+            image-rendering: crisp-edges;
+        }
+        
+        .info-container {
+            margin-top: 6px;
+            width: 100%;
+        }
+        
+        .titulo {
+            font-size: ${cfg.fonteTitulo};
+            font-weight: bold;
+            color: #000;
+            margin: 3px 0;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+        
+        .subtitulo {
+            font-size: ${cfg.fonteInfo};
+            color: #555;
+            margin: 1px 0;
+        }
+        
+        .id-badge {
+            display: inline-block;
+            background: #3d5aa8;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: bold;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .scan-text {
+            font-size: 7px;
+            color: #999;
+            margin-top: 3px;
+        }
+        
+        @media print {
+            .etiqueta {
+                page-break-after: always;
+            }
+            .etiqueta:last-child {
+                page-break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body>`);
+            
+            cards.forEach((card, index) => {
+                const imgSrc = card.querySelector('img').src;
+                const nome = card.querySelector('h5').textContent;
+                const idBadge = card.querySelector('.badge-id').textContent.replace('ID: ', '');
+                
+                printWindow.document.write(`
+    <div class="etiqueta">
+        <div class="qr-container">
+            <img src="${imgSrc}" alt="QR Code" crossorigin="anonymous">
+        </div>
+        <div class="info-container">
+            <div class="titulo">${nome}</div>
+            ${idBadge ? `<div class="id-badge">ID: ${idBadge}</div>` : ''}
+            <div class="subtitulo">Escaneie para acessar</div>
+            <div class="scan-text">📱 Aponte a câmera do celular</div>
+        </div>
+    </div>`);
+            });
+            
+            printWindow.document.write(`
+</body>
+</html>`);
+            
+            printWindow.document.close();
+            
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
+            };
+            
+            mostrarToast(`🖨️ ${cards.length} etiqueta(s) de máquina enviada(s) para impressão!`, 'success');
+        }
+
+        function mostrarToast(mensagem, tipo) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-item';
+            const icones = { 
+                success: 'check-circle-fill', 
+                danger: 'x-circle-fill', 
+                warning: 'exclamation-triangle-fill' 
+            };
+            const cores = { 
+                success: 'var(--success)', 
+                danger: 'var(--danger)', 
+                warning: 'var(--warning)' 
+            };
+            const icone = icones[tipo] || 'check-circle-fill';
+            const cor = cores[tipo] || 'var(--success)';
+            
+            toast.innerHTML = `<i class="bi bi-${icone}" style="color:${cor};font-size:1.2em"></i><span style="font-size:0.9em">${mensagem}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => { 
+                toast.style.opacity = '0'; 
+                toast.style.transition = 'opacity 0.3s'; 
+                setTimeout(() => toast.remove(), 300); 
+            }, 3000);
+        }
+    </script>
+    <script src="/static/theme-toggle.js"></script>
+</body>
+</html>
