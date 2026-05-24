@@ -13,6 +13,6 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "postgresql://neondb_owner:npg_3ARe2vQBYsnt@ep-frosty-cloud-amd0yijb-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require"
+    "DATABASE_URL": "postgresql://neondb_owner:npg_u3KBSnf7XWGA@ep-cold-wind-api54jnp-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
   }
 }
