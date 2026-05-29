@@ -548,7 +548,7 @@ def logout():
 # ============================================
 @app.route('/')
 def index():
-    print("🔍 Rota index chamada!")
+    print("Rota index chamada!")
     return render_template('index.html', current_user=current_user)
 
 @app.route('/gerar')
@@ -1055,9 +1055,7 @@ def gerar_qr():
         
         buf.seek(0)
         
-        print(f"✅ QR Code gerado com sucesso: {modelo_id}")
-        print(f"📏 Etiqueta: 60mm x 40mm (709x472 px @ 300 DPI)")
-        print(f"🔤 Tamanhos de fonte AUMENTADOS: Nome 28px | Labels 24px | Valores 22px | ID 18px | Scan 20px")
+
         
         return jsonify({
             'status': 'ok',
