@@ -98,10 +98,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 FONTS_DIR = os.path.join(BASE_DIR, 'fonts')
 
-print(f"📁 BASE_DIR: {BASE_DIR}")
-print(f"📁 FONTS_DIR: {FONTS_DIR}")
-print(f"📁 Fontes disponíveis: {os.listdir(FONTS_DIR) if os.path.exists(FONTS_DIR) else 'PASTA NÃO ENCONTRADA!'}")
-print(f"🕐 Fuso horário configurado: America/Sao_Paulo")
+
 
 # ============================================
 # INICIALIZAÇÃO DO BANCO
@@ -252,12 +249,12 @@ def init_db():
                         VALUES (%s, %s, %s)
                     ''', ('admin', admin_password, 'admin'))
         
-        print("✅ Banco de dados inicializado com sucesso!")
-        print("🕐 Timezone configurado: America/Sao_Paulo")
-        print("👤 Usuário admin criado (senha: admin8216@)")
-        print("🖥️ Tabelas de monitores criadas!")
+        print(" Banco de dados inicializado com sucesso!")
+        print(" Timezone configurado: America/Sao_Paulo")
+        print(" Usuário admin criado (senha: admin8216@)")
+        print(" Tabelas de monitores criadas!")
     except Exception as e:
-        print(f"❌ Erro ao inicializar banco: {e}")
+        print(f" Erro ao inicializar banco: {e}")
         raise
 
 # ============================================
@@ -500,7 +497,7 @@ def wrap_text(text, font, max_width, draw):
 # APP FLASK - CRIAR ANTES DE TODAS AS ROTAS
 # ============================================
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
-app.config['SECRET_KEY'] = '4mc-estoque-2024'
+app.config['SECRET_KEY'] = 'stargdl-2026'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 # Inicializar Login Manager
@@ -2347,14 +2344,4 @@ def verificar_timezone():
 # ============================================
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    print("=" * 60)
-    print("🚀 SISTEMA 4MC - ESTOQUE DE NOTEBOOKS, MÁQUINAS E MONITORES")
-    print(f"📱 http://localhost:{port}")
-    print("⚡ Banco PostgreSQL + QR Codes")
-    print("📐 Ordenação por MARCA no Excel")
-    print("📏 Formatação profissional com cores")
-    print("🔄 Movimentação para Notebooks, Máquinas e Monitores")
-    print(f"🕐 Fuso horário: São Paulo (America/Sao_Paulo)")
-    print(f"🕐 Hora atual: {agora_brasil().strftime('%d/%m/%Y %H:%M:%S')}")
-    print("=" * 60)
     app.run(debug=False, host='0.0.0.0', port=port)
