@@ -53,8 +53,7 @@ def load_user(user_id):
 # CONFIGURAÇÃO OTIMIZADA
 # ============================================
 DATABASE_URL = os.environ.get('DATABASE_URL', 
-    "postgresql://neondb_owner:npg_G7LRFI9XsOfC@ep-broad-snow-ap06ks1y-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
-
+    "") # COLOCAR A CHAVE DA API DO BACN DE DADOS AQUI
 connection_pool = None
 
 def get_connection():
